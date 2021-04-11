@@ -1,4 +1,4 @@
 *.pyc
 *.swp
 *.bak
-des.py
+AES/*

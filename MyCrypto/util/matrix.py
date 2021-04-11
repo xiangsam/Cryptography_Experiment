@@ -3,12 +3,13 @@ class Matrix():
     matrix class
     """
 
-    def __init__(self, L):
+    def __init__(self, L, etype=int):
         assert isinstance(L, list) and isinstance(L[0], list)
         self.row = len(L)
         self.col = len(L[0])
+        self.etype = etype
         self._element = [
-            [L[i][j] for j in range(self.col)] for i in range(self.row)
+            [etype(L[i][j]) for j in range(self.col)] for i in range(self.row)
         ]
 
     def __repr__(self):
@@ -19,55 +20,71 @@ class Matrix():
         return self._element[index[0]][index[1]]
 
     def __setitem__(self, index, value):
+        assert isinstance(value, self.etype)
         self._element[index[0]][index[1]] = value
 
     def __add__(self, other):
+        assert isinstance(other, Matrix)
         assert self.shape == other.shape
-        out = Matrix.zero(self.row, self.col)
+        out = Matrix.zero(self.row, self.col, self.etype)
         for i in range(self.row):
             for j in range(self.col):
                 out[i, j] = self[i, j] + other[i, j]
         return out
 
     def __sub__(self, other):
+        assert isinstance(other, Matrix)
         assert self.shape == other.shape
-        out = Matrix.zero(self.row, self.col)
+        out = Matrix.zero(self.row, self.col, self.etype)
         for i in range(self.row):
             for j in range(self.col):
-                out[i, j] = self[i, j] + other[i, j]
+                out[i, j] = self[i, j] - other[i, j]
         return out
 
     def __mul__(self, other):
-        if isinstance(other, int) or isinstance(other, float):  #number multiply matrix
-            out = Matrix.zero(self.row, self.col)
+        if isinstance(other, self.etype):  #element multiply matrix
+            out = Matrix.zero(self.row, self.col, self.etype)
             for i in range(self.row):
                 for j in range(self.col):
                     out[i, j] = self[i, j] * other
             return out
-        assert self.col == other.row
-        out = Matrix.zero(self.row, other.col)
+        assert isinstance(other, Matrix) and self.col == other.row
+        out = Matrix.zero(self.row, other.col, self.etype)
         for i in range(self.row):
             for j in range(other.col):
-                temp = 0
+                temp = self.etype(0)
                 for k in range(self.col):
                     temp = temp + self[i, k] * other[k, j]
                 out[i, j] = temp
         return out
 
     def __mod__(self, other):
-        assert isinstance(other, int)
+        assert isinstance(other, self.etype)
         out = Matrix.zero(self.row, self.col)
         for i in range(self.row):
             for j in range(self.col):
                 out[i, j] = self[i, j] % other
         return out
 
+    def getColumn(self, index:int):
+        assert 0 <= index < self.col
+        ans = []
+        for row in range(self.row):
+            ans.append(self[row, index])
+        return ans
+    def getRow(self, index:int):
+        assert 0 <= index < self.row
+        ans = []
+        for col in range(self.col):
+            ans.append(self[index, col])
+        return ans
+
     def slice(self, r_index: int, c_index: int):
         """
         design to get subMatrix
         remove r-th row and c-th column(r,c begin at 0)
         """
-        out = Matrix.zero(self.row - 1, self.col - 1)
+        out = Matrix.zero(self.row - 1, self.col - 1, self.etype)
         for i in range(self.row):
             for j in range(self.col):
                 if i == r_index:
@@ -80,17 +97,17 @@ class Matrix():
         return out
 
     @staticmethod
-    def identity(dim: int):
+    def identity(dim: int, etype=int):
         """
         return the identity matrix whose dim is n
         """
         List = [[1 if i == j else 0 for j in range(dim)] for i in range(dim)]
-        return Matrix(List)
+        return Matrix(List, etype)
 
     @staticmethod
-    def zero(row_len: int, col_len: int):
+    def zero(row_len: int, col_len: int, etype=int):
         L = [[0 for c in range(col_len)] for r in range(row_len)]
-        return Matrix(L)
+        return Matrix(L, etype)
 
     @property
     def shape(self):
@@ -101,7 +118,7 @@ class Matrix():
         return self.row == self.col
 
     def transpose(self):
-        out = Matrix.zero(self.col, self.row)
+        out = Matrix.zero(self.col, self.row, self.etype)
         for i in range(self.row):
             for j in range(self.col):
                 out[j, i] = self[i, j]
@@ -113,17 +130,23 @@ class Matrix():
             return self[0, 0]
         if self.row == 2:
             return self[0, 0] * self[1, 1] - self[0, 1] * self[1, 0]
-        ans = 0
+        ans = self.etype(0)
         for j in range(self.col):
-            ans = ans + (-1)**(j) * self[0, j] * self.slice(0, j).det()
+            if j % 2 == 0:
+                ans = ans + self[0, j] * self.slice(0, j).det()
+            else:
+                ans = ans - self[0, j] * self.slice(0, j).det()
         return ans
 
     def adjoint_matrix(self):
         assert self.row == self.col
-        out = Matrix.zero(self.row, self.col)
+        out = Matrix.zero(self.row, self.col, self.etype)
         for i in range(self.row):
             for j in range(self.col):
-                out[i, j] = (-1)**(i + j) * self.slice(i, j).det()
+                if (i+j)%2 == 0:
+                    out[i, j] = self.etype(0) + self.slice(i, j).det()
+                else:
+                    out[i, j] = self.etype(0) - self.slice(i, j).det()
         return out.transpose()
 
     def inverse(self):
@@ -132,7 +155,7 @@ class Matrix():
         ad_m = self.adjoint_matrix()
         for i in range(ad_m.row):
             for j in range(ad_m.col):
-                ad_m[i, j] = ad_m[i, j] / det
+                ad_m[i, j] = self.etype(ad_m[i, j] / det)
         return ad_m
 
 

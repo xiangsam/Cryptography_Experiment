@@ -3,7 +3,10 @@ class GF2:
     the polynomial is x^8 + x^4 + x^3 + x^1 + x^0
     """
     def __init__(self, value):
-        self.value = value
+        if isinstance(value, GF2):
+            self.value = value.value
+        else:
+            self.value = value
     def getValue(self):
         return self.value
     def __str__(self):
@@ -11,6 +14,10 @@ class GF2:
     __repr__ = __str__
     def __iter__(self):
         return self
+    def __eq__(self, other):
+        return self.value == other.value
+    def __hash__(self):
+        return self.value
     def __next__(self):
         return self
     def __add__(self, other):
@@ -69,17 +76,15 @@ class GF2:
         return d
     def inverse(self):
         if self.value == 0:
-            print('wrong')
-            return GF2(-1)
+            return GF2(0)
         else:
-            for i in range(1, 255):
+            for i in range(1, 256):
                 mul = self * GF2(i)
                 if mul.value == 1:
                     return GF2(i)
     def inverse2(self):
         if self.value == 0:
-            print('wrong')
-            return -1
+            return GF2(0)
         else:
             x, y, d = GF2.exgcd(self, GF2(0x11b))
             return x
@@ -177,3 +182,7 @@ if __name__ == '__main__':
     #part five
     print()
     GF2.Pri_poly(8)
+
+
+    print('#####')
+    print(GF2(0x1c).inverse2())

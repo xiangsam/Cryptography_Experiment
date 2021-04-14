@@ -21,6 +21,27 @@ def bs2s(s):
         ]
     ])
 
+def xor(*args):
+    """
+    a, b is binary string
+    """
+    assert len(args) > 1
+    lst = []
+    array = list(args)
+    maxlen = max([len(e) for e in array])
+    for i,e in enumerate(array):
+        if len(e) < maxlen:
+            array[i] = '0'*(maxlen-len(e))+e
+    for i in range(maxlen):
+        temp = array[0][i]
+        for e in array[1:]:
+            if temp == e[i]:
+                temp = '0'
+            else:
+                temp = '1'
+        lst.append(temp)
+    return ''.join(lst)
+
 def i2bs(num, length):
     """
     digit to binary string
@@ -37,3 +58,5 @@ if __name__ == '__main__':
     s = i2bs(num, 64)
     print(s)
     print(bs2i(s))
+    print('##########')
+    print(xor('10001', '10010', '11'))

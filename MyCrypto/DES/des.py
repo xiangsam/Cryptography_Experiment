@@ -3,7 +3,7 @@
 import sys
 
 sys.path.append('../..')
-from MyCrypto.util.s2bs import i2bs, bs2i
+from MyCrypto.util.s2bs import i2bs, bs2i, xor
 
 
 class DES:
@@ -108,11 +108,14 @@ class DES:
 
     def F(self, dest, seq):
         e_dest = DES.tableShift(dest, self.e_table)
-        xorans = DES.xor(e_dest, self.Key_28[seq])
+        xorans = xor(e_dest, self.Key_28[seq])
         sboxans = DES.SboxShift(xorans, self.sbox)
         return DES.tableShift(sboxans, self.p_table)
 
     def process(self, mode='encrypt'):
+        """
+        return binary string result
+        """
         self.getRoundKey()
         text = self.text
         ip_text = DES.tableShift(text, self.ip_table)
@@ -121,19 +124,19 @@ class DES:
         if mode == 'encrypt':
             for i in range(16):
                 temp = rtext
-                rtext = DES.xor(ltext, self.F(rtext, i))
+                rtext = xor(ltext, self.F(rtext, i))
                 ltext = temp
         elif mode == 'decrypt':
             for i in range(16):
                 temp = rtext
-                rtext = DES.xor(ltext, self.F(rtext, 15-i))
+                rtext = xor(ltext, self.F(rtext, 15-i))
                 ltext = temp
         else:
             print('Error Mode')
             return
         ans = rtext + ltext
         ans = DES.tableShift(ans, self.ip_inv_table)
-        return '0x%016x' % (bs2i(ans))
+        return ans
     @staticmethod
     def SboxShift(dest, Sbox):
         d_out = ''
@@ -145,15 +148,6 @@ class DES:
             d_out += i2bs(s_box[row * 16 + col], 4)
         return d_out
     @staticmethod
-    def xor(a, b):
-        l = []
-        for i, j in zip(a, b):
-            if i == j:
-                l.append('0')
-            else:
-                l.append('1')
-        return ''.join(l)
-    @staticmethod
     def tableShift(dest, table):
         ans = []
         for e in table:
@@ -164,24 +158,31 @@ class DES:
     def circle_lshift(dest, shiftbit):
         return dest[shiftbit:] + dest[0:shiftbit]
 
+    @staticmethod
+    def hex(bs):
+        """
+        convert process ans(binary string) to hex string
+        """
+        return '0x%016x' % (bs2i(bs))
+
 
 if __name__ == '__main__':
     test_p = DES(0x02468aceeca86420, 0x0f1571c947d9e859)
     test_c = DES(0xda02ce3a89ecac3b, 0x0f1571c947d9e859)
-    print('cypher: {}'.format(test_p.process()))
-    print('plaintext: {}\n'.format(test_c.process('decrypt')))
+    print('cypher: {}'.format(DES.hex(test_p.process())))
+    print('plaintext: {}\n'.format(DES.hex(test_c.process('decrypt'))))
     test_p = DES(0x12468aceeca86420, 0x0f1571c947d9e859)
     test_c = DES(0x057cde97d7683f2a, 0x0f1571c947d9e859)
-    print('cypher: {}'.format(test_p.process()))
-    print('plaintext: {}\n'.format(test_c.process('decrypt')))
+    print('cypher: {}'.format(DES.hex(test_p.process())))
+    print('plaintext: {}\n'.format(DES.hex(test_c.process('decrypt'))))
     test_p = DES(0x0123456789abcdef,0x1f1571c947d9e859)
-    print('cypher: {}\n'.format(test_p.process()))
+    print('cypher: {}\n'.format(DES.hex(test_p.process())))
     test_p = DES(0x0000000000000000, 0x3abb72cbe0204027)
-    print('cypher: {}\n'.format(test_p.process()))
+    print('cypher: {}\n'.format(DES.hex(test_p.process())))
     test_c = DES(0x0123456789abcdef, 0xbcca87bb9320ef40)
-    print('plaintext: {}\n'.format(test_c.process('decrypt')))
+    print('plaintext: {}\n'.format(DES.hex(test_c.process('decrypt'))))
     test_c = DES(0x72ae4683e14940cd, 0xda8483580415016b)
-    print('plaintext: {}\n'.format(test_c.process('decrypt')))
+    print('plaintext: {}\n'.format(DES.hex(test_c.process('decrypt'))))
 
     weak_key = [0x0101010101010101,
                 0xFEFEFEFEFEFEFEFE,
@@ -193,8 +194,8 @@ if __name__ == '__main__':
                 0x1E1E1E1E0F0F0F0F]
     for e in weak_key:
         test = DES(0x02468aceeca86420,e)
-        cypher = int(test.process(),16)
-        print('E(E(M,K),K) = {}'.format(DES(cypher, e).process()))
+        cypher = int(test.process(),2)
+        print('E(E(M,K),K) = {}'.format(DES.hex(DES(cypher, e).process())))
         print('The plain is 0x%016x' % 0x02468aceeca86420)
         if DES(cypher,e).process() == '0x%016x' % 0x02468aceeca86420:
             print('0x%016x is weak key!\n' % e)
@@ -208,11 +209,11 @@ if __name__ == '__main__':
         k1 = lst[0]
         k2 = lst[1]
         plain = 0x02468aceeca86420
-        tmp1 = int(DES(plain, k1).process(),16)
-        tmp2 = int(DES(plain, k2).process(),16)
+        tmp1 = int(DES(plain, k1).process(),2)
+        tmp2 = int(DES(plain, k2).process(),2)
         plain1 = DES(tmp1, k2).process()
         plain2 = DES(tmp2, k1).process()
-        print('E(E(plain, k1),k2) = {}'.format(plain1))
-        print('E(E(plain, k2), k1) = {}'.format(plain2))
+        print('E(E(plain, k1),k2) = {}'.format(DES.hex(plain1)))
+        print('E(E(plain, k2), k1) = {}'.format(DES.hex(plain2)))
         if plain1 == plain2 == '0x%016x' % 0x02468aceeca86420:
             print('0x%(k1)016x and 0x%(k2)016x is semi weak keys pair' % {'k1':k1,'k2':k2})

@@ -3,7 +3,7 @@
 import sys
 
 sys.path.append('../..')
-from MyCrypto.util.s2bs import i2bs, bs2i
+from MyCrypto.util.s2bs import i2bs, bs2i, xor
 
 
 class DES:
@@ -118,7 +118,7 @@ class DES:
 
     def F(self, dest, seq):
         e_dest = DES.tableShift(dest, self.e_table)
-        xorans = DES.xor(e_dest, self.Key_28[seq])
+        xorans = xor(e_dest, self.Key_28[seq])
         sboxans = DES.SboxShift(xorans, self.sbox)
         return DES.tableShift(sboxans, self.p_table)
 
@@ -131,12 +131,12 @@ class DES:
         if mode == 'encrypt':
             for i in range(16):
                 temp = rtext
-                rtext = DES.xor(ltext, self.F(rtext, i))
+                rtext = xor(ltext, self.F(rtext, i))
                 ltext = temp
         elif mode == 'decrypt':
             for i in range(16):
                 temp = rtext
-                rtext = DES.xor(ltext, self.F(rtext, 15-i))
+                rtext = xor(ltext, self.F(rtext, 15-i))
                 ltext = temp
         else:
             print('Error Mode')
@@ -157,7 +157,7 @@ class DES:
         else:
             print('wrong mode')
             return None
-        return '0x%016x' % bs2i(self.text)
+        return self.text
 
     @staticmethod
     def SboxShift(dest, Sbox):
@@ -170,15 +170,6 @@ class DES:
             d_out += i2bs(s_box[row * 16 + col], 4)
         return d_out
     @staticmethod
-    def xor(a, b):
-        l = []
-        for i, j in zip(a, b):
-            if i == j:
-                l.append('0')
-            else:
-                l.append('1')
-        return ''.join(l)
-    @staticmethod
     def tableShift(dest, table):
         ans = []
         for e in table:
@@ -189,16 +180,23 @@ class DES:
     def circle_lshift(dest, shiftbit):
         return dest[shiftbit:] + dest[0:shiftbit]
 
+    @staticmethod
+    def hex(bs):
+        """
+        convert binary string result to hex string
+        """
+        return '0x%016x' % bs2i(bs)
+
 if __name__ == '__main__':
     test_p = DES(0x0bae3b9e42415649, 0x05261d3824311a20300935393c0d100b)
     test_c = DES(0x3fcf306caa460b1e, 0x05261d3824311a20300935393c0d100b)
-    print('cypher: {}'.format(test_p.tri_process()))
-    print('plaintext: {}\n'.format(test_c.tri_process('decrypt')))
+    print('cypher: {}'.format(DES.hex(test_p.tri_process())))
+    print('plaintext: {}\n'.format(DES.hex(test_c.tri_process('decrypt'))))
     test_p = DES(0x67117cf2c11bfc09, 0x1c10372a2832002b3325340136002c35)
     test_c = DES(0x78a22441bd78c3dd, 0x1c10372a2832002b3325340136002c35)
-    print('cypher: {}'.format(test_p.tri_process()))
-    print('plaintext: {}\n'.format(test_c.tri_process('decrypt')))
+    print('cypher: {}'.format(DES.hex(test_p.tri_process())))
+    print('plaintext: {}\n'.format(DES.hex(test_c.tri_process('decrypt'))))
     test_p = DES(0xf596506e738538b8, 0x12071c241a0a0f0804292a380c341f03)
-    print('cypher: {}\n'.format(test_p.tri_process()))
+    print('cypher: {}\n'.format(DES.hex(test_p.tri_process())))
     test_c = DES(0x2b2cefbc99f91153, 0x1d81b63cf3a645139c6f1460f2ec2638)
-    print('plaintext: {}\n'.format(test_c.tri_process('decrypt')))
+    print('plaintext: {}\n'.format(DES.hex(test_c.tri_process('decrypt'))))

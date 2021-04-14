@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #!/bin/usr/python3
 import sys
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #!/usr/bin/python3
 def encrypt(ptable, ctable, p):
     list_c = []

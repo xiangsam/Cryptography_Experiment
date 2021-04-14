@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 class GF2:
     """
     the polynomial is x^8 + x^4 + x^3 + x^1 + x^0
@@ -106,7 +108,7 @@ class GF2:
             return x, y, d
             
     @staticmethod
-    def Pri_poly(n:int):
+    def Pri_poly(n):
         """get the primitive polynomial of GF(2), the degree is n"""
         m = GF2((1 << (2**n - 1)) | 1)
         for p_i in range(1<<n, 1<<(n+1)):
@@ -132,7 +134,7 @@ class GF2:
             return -1
         else:
             return self.value.bit_length()
-    
+
 if __name__ == '__main__':
     #part one
     a = [0x89, 0xaf, 0x35]

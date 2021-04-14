@@ -1,4 +1,6 @@
+# -*- coding:utf-8 -*-
 #!/usr/bin/python3
+
 def gcd(a,b):
     """get the GCD of a and b"""
     if b == 0:

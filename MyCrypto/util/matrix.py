@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class Matrix():
     """
     matrix class
@@ -66,20 +67,20 @@ class Matrix():
                 out[i, j] = self[i, j] % other
         return out
 
-    def getColumn(self, index:int):
+    def getColumn(self, index):
         assert 0 <= index < self.col
         ans = []
         for row in range(self.row):
             ans.append(self[row, index])
         return ans
-    def getRow(self, index:int):
+    def getRow(self, index):
         assert 0 <= index < self.row
         ans = []
         for col in range(self.col):
             ans.append(self[index, col])
         return ans
 
-    def slice(self, r_index: int, c_index: int):
+    def slice(self, r_index, c_index):
         """
         design to get subMatrix
         remove r-th row and c-th column(r,c begin at 0)
@@ -97,7 +98,7 @@ class Matrix():
         return out
 
     @staticmethod
-    def identity(dim: int, etype=int):
+    def identity(dim, etype=int):
         """
         return the identity matrix whose dim is n
         """
@@ -105,7 +106,7 @@ class Matrix():
         return Matrix(List, etype)
 
     @staticmethod
-    def zero(row_len: int, col_len: int, etype=int):
+    def zero(row_len, col_len, etype=int):
         L = [[0 for c in range(col_len)] for r in range(row_len)]
         return Matrix(L, etype)
 

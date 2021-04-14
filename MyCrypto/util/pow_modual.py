@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 def quickPow(x,n,m):
     """caculate x^n %m"""
     d = 1

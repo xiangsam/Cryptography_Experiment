@@ -67,6 +67,13 @@ class Matrix():
                 out[i, j] = self[i, j] % other
         return out
 
+    def copy(self):
+        ans = Matrix.zero(self.row, self.col,self.etype)
+        for i in range(self.row):
+            for j in range(self.col):
+                ans[i,j] = self[i,j]
+        return ans
+
     def getColumn(self, index):
         assert 0 <= index < self.col
         ans = []

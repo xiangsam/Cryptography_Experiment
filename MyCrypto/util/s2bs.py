@@ -8,8 +8,7 @@ def s2bs(s):
     """
     bs = ''
     for c in s:
-        bc = bin(ord(c)).replace('0b', '')
-        bc = '0' * (8 - len(bc)) + bc
+        bc = bin(ord(c)).replace('0b', '').zfill(8)
         bs = bs + bc
     return bs
 
@@ -32,7 +31,8 @@ def xor(*args):
     maxlen = max([len(e) for e in array])
     for i,e in enumerate(array):
         if len(e) < maxlen:
-            array[i] = '0'*(maxlen-len(e))+e
+            #array[i] = '0'*(maxlen-len(e))+e
+            array[i] = e.zfill(maxlen)
     for i in range(maxlen):
         temp = array[0][i]
         for e in array[1:]:
@@ -49,7 +49,8 @@ def i2bs(num, length):
     length is the length of binary string
     """
     bs = bin(num).replace('0b', '')
-    bs = '0'*(length - len(bs)) + bs
+    #bs = '0'*(length - len(bs)) + bs
+    bs = bs.zfill(length)
     return bs
 
 def bs2i(bs):

@@ -82,6 +82,8 @@ def getRowShiftIndex(r, c):
 
 if __name__ == '__main__':
     target = AES(0x00112233445566778899aabbccddeeff,0x000102030405060708090a0b0c0d0e0f)
+    print('True key is 0x%032x' % 0x000102030405060708090a0b0c0d0e0f )
+    print('crack key is:')
     print(recoverKey(target))
     key = random.randint(0x10000000000000000000000000000000,0xffffffffffffffffffffffffffffffff)
     target = AES(0x00112233445566778899aabbccddeeff, key)

@@ -296,9 +296,3 @@ if __name__ == '__main__':
             0x2b24424b9fed596659842a4d0b007c61)
     print('cypher: {}'.format(p.encrypt()) + '\n')
     print('plaintext: {}'.format(c.decrypt()))
-
-
-    test_p = AES(0x0123456789abcdeffedcba9876543210, 0x0f1571c947d9e8590cb7add6af7f6798)
-    test_pp = AES(0x0123456789abcdeffedcba9876543210,0x0e1571c947d9e8590cb7add6af7f6798)
-    print(test_p.encrypt())
-    print(test_pp.encrypt())

@@ -296,3 +296,4 @@ if __name__ == '__main__':
             0x2b24424b9fed596659842a4d0b007c61)
     print('cypher: {}'.format(p.encrypt()) + '\n')
     print('plaintext: {}'.format(c.decrypt()))
+    print(AES(0,0).encrypt())

@@ -7,11 +7,14 @@ sys.path.append('../..')
 from MyCrypto.util.pow_modual import quickPow
 from MyCrypto.util.gcd import gcd
 def Miler_Rabin(n):
-    """Miller–Rabin primality test"""
+    """
+    Miller–Rabin primality test
+    if the number is Prime number, then return True.
+    """
     test_time = 100
     if n % 2 == 0:
-        print("Composite number")
-        return
+        #print("Composite number")
+        return False
     else:
         tmp = n-1
         k = 0
@@ -29,10 +32,10 @@ def Miler_Rabin(n):
                     j = -1
                     break
             if j != -1:
-                print('Composite number')
-                return
-        print("Prime number")
-        return
+                #print('Composite number')
+                return False
+        #print("Prime number")
+        return True
 
 if __name__ == '__main__':
     n = [1000023, 1000033, 100160063, 1500450271, 1494462659429290047815067355171411187560751791530,

@@ -297,3 +297,5 @@ if __name__ == '__main__':
     print('cypher: {}'.format(p.encrypt()) + '\n')
     print('plaintext: {}'.format(c.decrypt()))
     print(AES(0,0).encrypt())
+    p = AES(0x3243F6A8885A308D313198A2E0370734,0x2b7e151628aed2a6abf7158809cf4f3c)
+    print(p.roundKey)

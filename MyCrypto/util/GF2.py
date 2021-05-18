@@ -187,4 +187,5 @@ if __name__ == '__main__':
 
 
     print('#####')
+    print(GF2(0x1c).inverse())
     print(GF2(0x1c).inverse2())

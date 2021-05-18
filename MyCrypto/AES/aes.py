@@ -4,9 +4,12 @@ import sys
 sys.path.append('../..')
 
 from MyCrypto.util.matrix import Matrix
-from MyCrypto.util.GF2 import GF2
+from MyCrypto.util.GF import GF
 from MyCrypto.util.s2bs import i2bs, bs2i, s2bs
 
+class GF28(GF):
+    def __init__(self,value,order = 8):
+        super().__init__(value, order)
 
 class AES:
 
@@ -33,7 +36,7 @@ class AES:
                            [0x70, 0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e, 0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e],
                            [0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf],
                            [0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16]
-                           ], GF2)
+                           ], GF28)
         self.inv_sbox = Matrix([
                                [0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb],
                                [0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87, 0x34, 0x8e, 0x43, 0x44, 0xc4, 0xde, 0xe9, 0xcb],
@@ -51,14 +54,14 @@ class AES:
                                [0x60, 0x51, 0x7f, 0xa9, 0x19, 0xb5, 0x4a, 0x0d, 0x2d, 0xe5, 0x7a, 0x9f, 0x93, 0xc9, 0x9c, 0xef],
                                [0xa0, 0xe0, 0x3b, 0x4d, 0xae, 0x2a, 0xf5, 0xb0, 0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61],
                                [0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d],
-                               ], GF2)
+                               ], GF28)
         self.getRoundKey()
         self.c_mix = Matrix(
             [[0x02, 0x03, 0x01, 0x01], [0x01, 0x02, 0x03, 0x01],
-             [0x01, 0x01, 0x02, 0x03], [0x03, 0x01, 0x01, 0x02]], GF2)
+             [0x01, 0x01, 0x02, 0x03], [0x03, 0x01, 0x01, 0x02]], GF28)
         self.invc_mix = Matrix(
             [[0x0e, 0x0b, 0x0d, 0x09], [0x09, 0x0e, 0x0b, 0x0d],
-             [0x0d, 0x09, 0x0e, 0x0b], [0x0b, 0x0d, 0x09, 0x0e]], GF2)
+             [0x0d, 0x09, 0x0e, 0x0b], [0x0b, 0x0d, 0x09, 0x0e]], GF28)
 
     def sBoxShift(self, byte, inverse=False):
         byte = str(byte)
@@ -82,7 +85,7 @@ class AES:
             words.append(self.key.getColumn(i))
         for i in range(4, 44):
             if i % 4 == 0:
-                rc = [GF2(2)**(GF2(i // 4 - 1)), GF2(0), GF2(0), GF2(0)]
+                rc = [GF28(2)**(GF28(i // 4 - 1)), GF28(0), GF28(0), GF28(0)]
                 words.append([
                     a + b
                     for a, b in zip(words[i - 4], self._gFun(words[i - 1], rc))
@@ -95,7 +98,7 @@ class AES:
                 Matrix([
                     words[4 * i], words[4 * i + 1], words[4 * i + 2],
                     words[4 * i + 3]
-                ], GF2).transpose())
+                ], GF28).transpose())
 
     def rowShift(self, mode='encrypt'):
         for i in range(1, 4):
@@ -210,7 +213,8 @@ class AES:
                 matrix.append([bs2i(e)])
             else:
                 matrix[i % 4].append(bs2i(e))
-        return Matrix(matrix, GF2)
+        print(matrix)
+        return Matrix(matrix, GF28)
 
     @staticmethod
     def getKey(key):
@@ -224,19 +228,19 @@ class AES:
                 matrix.append([bs2i(e)])
             else:
                 matrix[i % 4].append(bs2i(e))
-        return Matrix(matrix, GF2)
+        return Matrix(matrix, GF28)
 
     @staticmethod
     def getSBox():
         s_matrix = [[(i * 16 + j) for j in range(16)] for i in range(16)]
-        s_matrix = Matrix(s_matrix, GF2)
+        s_matrix = Matrix(s_matrix, GF28)
         a_matrix = [[1, 0, 0, 0, 1, 1, 1, 1], [1, 1, 0, 0, 0, 1, 1, 1],
                     [1, 1, 1, 0, 0, 0, 1, 1], [1, 1, 1, 1, 0, 0, 0, 1],
                     [1, 1, 1, 1, 1, 0, 0, 0], [0, 1, 1, 1, 1, 1, 0, 0],
                     [0, 0, 1, 1, 1, 1, 1, 0], [0, 0, 0, 1, 1, 1, 1, 1]]
-        a_matrix = Matrix(a_matrix, GF2)
+        a_matrix = Matrix(a_matrix, GF28)
         c_matrix = [[1], [1], [0], [0], [0], [1], [1], [0]]
-        c_matrix = Matrix(c_matrix, GF2)
+        c_matrix = Matrix(c_matrix, GF28)
         for i in range(16):
             for j in range(16):
                 temp = s_matrix[i, j].inverse()
@@ -247,23 +251,23 @@ class AES:
                         b_matrix.append([1])
                     else:
                         b_matrix.append([0])
-                b_matrix = Matrix(b_matrix, GF2)
+                b_matrix = Matrix(b_matrix, GF28)
                 b_matrix = a_matrix * b_matrix + c_matrix
                 bs = ''.join([str(b_matrix[7 - i, 0])[1] for i in range(8)])
-                s_matrix[i, j] = GF2(bs2i(bs))
+                s_matrix[i, j] = GF28(bs2i(bs))
         return s_matrix
 
     @staticmethod
     def getInv_SBox():
         invs_matrix = [[(i * 16 + j) for j in range(16)] for i in range(16)]
-        invs_matrix = Matrix(invs_matrix, GF2)
+        invs_matrix = Matrix(invs_matrix, GF28)
         a_matrix = [[0, 0, 1, 0, 0, 1, 0, 1], [1, 0, 0, 1, 0, 0, 1, 0],
                     [0, 1, 0, 0, 1, 0, 0, 1], [1, 0, 1, 0, 0, 1, 0, 0],
                     [0, 1, 0, 1, 0, 0, 1, 0], [0, 0, 1, 0, 1, 0, 0, 1],
                     [1, 0, 0, 1, 0, 1, 0, 0], [0, 1, 0, 0, 1, 0, 1, 0]]
-        a_matrix = Matrix(a_matrix, GF2)
+        a_matrix = Matrix(a_matrix, GF28)
         c_matrix = [[1], [0], [1], [0], [0], [0], [0], [0]]
-        c_matrix = Matrix(c_matrix, GF2)
+        c_matrix = Matrix(c_matrix, GF28)
         for i in range(16):
             for j in range(16):
                 temp = invs_matrix[i, j]
@@ -274,10 +278,10 @@ class AES:
                         b_matrix.append([1])
                     else:
                         b_matrix.append([0])
-                b_matrix = Matrix(b_matrix, GF2)
+                b_matrix = Matrix(b_matrix, GF28)
                 b_matrix = a_matrix * b_matrix + c_matrix
                 bs = ''.join([str(b_matrix[7 - i, 0])[1] for i in range(8)])
-                invs_matrix[i, j] = GF2(bs2i(bs)).inverse()
+                invs_matrix[i, j] = GF28(bs2i(bs)).inverse()
         return invs_matrix
 
 

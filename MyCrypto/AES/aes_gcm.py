@@ -5,7 +5,7 @@ import sys
 sys.path.append('../..')
 from MyCrypto.AES.aes import AES
 from MyCrypto.util.s2bs import s2bs, bs2i, bs2s, i2bs,xor
-from MyCrypto.AES.GF import GF
+from MyCrypto.util.GF import GF
 
 class GF2_128(GF):
     def __init__(self, data, order = 128):
@@ -138,9 +138,9 @@ class GCM:
                 addPart = GF2_128(X[i-1]) + GF2_128(int(C[i-m-1].ljust(128,'0'),2))
             elif i == m+n+1:
                 addPart = GF2_128(X[i-1]) + GF2_128(((len(A) & 0xffffffffffffffff)<<64)+((lenC-1)*128+u & 0xffffffffffffffff))
-            addPart = bin(addPart.data).replace('0b','').zfill(128)
+            addPart = bin(addPart.value).replace('0b','').zfill(128)
             addPart = int(addPart[::-1],2)
-            ans = (GF2_128(addPart) * GF2_128(H)).data
+            ans = (GF2_128(addPart) * GF2_128(H)).value
             ans = bin(ans).replace('0b','').zfill(128)
             ans = int(ans[::-1],2)
             X.append(ans)

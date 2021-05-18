@@ -198,4 +198,4 @@ def GA(fname, n):
     return
 
 if __name__ == '__main__':
-    GA('test4', 5)
+    GA('out', 5)

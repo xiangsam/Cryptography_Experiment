@@ -9,6 +9,8 @@ def inverse_mod(a, m):
     assert isinstance(m,int)
     d, p, q = gcd.exgcd(a, m)
     if d == 1:
+        while p < 0:
+            p += m 
         return p
     else:
         print("Wrong")

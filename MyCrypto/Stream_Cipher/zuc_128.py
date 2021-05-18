@@ -148,12 +148,12 @@ class ZUC_128:
         return ans
 
 if __name__ == '__main__':
-    target = ZUC_128(0,0)
+    target = ZUC_128(0x338985fedc98cb99c9f9b346bd6cae56, 0x7dd3175c2374c7113bcbbfb339563172)
     print('test vector 1:')
-    target.run(2)
-    target = ZUC_128(0xffffffffffffffffffffffffffffffff, 0xffffffffffffffffffffffffffffffff)
+    target.run(10)
+    target = ZUC_128(0x1147a7e10da6fbeb4bec0e8b9dd91213, 0xc74ecf26f484c18e91f31847414cf7c2)
     print('test vector 2:')
-    target.run(2)
-    target = ZUC_128(0x3d4c4be96a82fdaeb58f641db17b455b, 0x84319aa8de6915ca1f6bda6bfbd8c766)
+    target.run(10)
+    target = ZUC_128(0xd770e5938fa6b0739559657fcc372907, 0xe93483af16855f21d0957d9a98244059)
     print('test vector 3:')
-    target.run(2)
+    target.run(10)

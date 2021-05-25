@@ -42,7 +42,7 @@ def xor(*args):
                 temp = '1'
         lst.append(temp)
     return ''.join(lst)
-
+def 
 def i2bs(num, length):
     """
     digit to binary string

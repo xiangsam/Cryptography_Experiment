@@ -2,8 +2,13 @@ import sys
 sys.path.append('../..')
 from MyCrypto.util.inverse_mod import inverse_mod
 from MyCrypto.RSA.rsa import quick_Decrypt, decrypt
-import libnum
 import math
+
+def n2s(n):
+    nbits = n.bit_length()
+    nbytes = (nbits + 7) >> 3
+    return n.to_bytes(nbytes, 'big').decode('utf-8')
+
 def Transform(up, down):
     """
     use list to present continued fraction
@@ -48,5 +53,5 @@ if __name__ == '__main__':
     d, p, q = wienerAttack(e, n)
     #plain = decrypt(c, d, n)
     plain = quick_Decrypt(c, d, p ,q)
-    print(libnum.n2s(plain).decode('utf-8'))
+    print(n2s(plain))
 

@@ -11,7 +11,7 @@ class PF:
     prime field GF(p)
     """
     def __init__(self, value, modulo):
-        assert isPrime(modulo)
+        #assert isPrime(modulo)
         assert isinstance(value, int) and isinstance(modulo, int)
         self.value = value % modulo
         self.modulo = modulo
@@ -69,6 +69,28 @@ class PF:
             self = self * self
         return d
 
+    def sqrt(self):
+        """
+        only work if  modulo % 4 == 3 or modulo % 8 == 5
+        """
+        if self.value == 0:
+            return self(0)
+        if self.modulo % 4 == 3:
+            u = (self.modulo - 3) // 4
+            y = self**(u+1)
+            z = y ** 2
+            if z == self:
+                return (y, -y)
+            return None
+        if self.modulo % 8 == 5:
+            u = (self.modulo - 5) // 8
+            y = self**(self(value=2)*u+self(value=1))
+            z = y**2
+            if z == self:
+                return(y, -y)
+            return None
+        return None
+
     def inverse(self):
         a = self.value
         m = self.modulo
@@ -88,3 +110,4 @@ if __name__ == '__main__':
     print('a/a', a/a)
     print('a^3', a**3)
     print('a^-1', a**-1)
+    print('a^1/2', a.sqrt())

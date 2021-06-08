@@ -2,8 +2,6 @@
 #!/usr/bin/python3
 
 import math
-import sys
-sys.path.append('../..')
 from random import randint
 
 def s2n(s):
@@ -143,10 +141,11 @@ if __name__ == '__main__':
     sys.path.append('../..')
     from MyCrypto.util.PF import PF
     class PF_11(PF):
-        def __init__(self, value, modulo=11):
-            super().__init__(value, modulo=11)
+        def __init__(self, value=0, modulo=11):
+            super().__init__(value, modulo)
     p = ECC(1, 6, PF_11, 2, 7, False)
-    print(p.bytestrToPoint(p.pointToByteStr()))
+    print('p is %s' %p)
+    print('test bytestrToPoint and the pointToByteStr: %s' % p.bytestrToPoint(p.pointToByteStr()))
     #print(p.strToPoint())
     for i in range(2, 13):
-        print(i * p)
+        print('[{}]p is {}'.format(str(i),str(i * p)))

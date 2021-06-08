@@ -21,7 +21,6 @@ class ElGamal:
         while x.isIdentity:#make sure k * pk is point of ECC and not ZERO
             k = randint(1, self.n-1)
             x = k * pk
-        
         return (k*self.G, pm+x)
 
     def decrypt(self, c):
@@ -43,8 +42,9 @@ if __name__ == '__main__':
     #print('B: {}'.format(str(Pb)))
     Pa = G(x = 4535708181192800030922425040161683059768487875080759471914, y = -1061575060680846108649238340040410272066486614691829051119)
     Pb = G(x = 15051890357046942792346514451227979111717518527499676907, y = 5515597659079030185293133062027700068886157516430489991452)
-    pm = G(x = 2594161300049362469169638638781986485403377947559889224556, y = -915731655498392811604767074090214190962897463083669095347)
-    pc = elgamalA.encrypt(pm, Pa)
-    print(pm)
-    print(pc)
-    print(elgamalA.decrypt(pc))
+    Pm = G(x = 2594161300049362469169638638781986485403377947559889224556, y = -915731655498392811604767074090214190962897463083669095347)
+    Pc = elgamalA.encrypt(Pm, Pa)
+    print('Pm is %s' % Pm)
+    print('Pc is :',end=' ')
+    print(Pc)
+    print('From Pc decrypt Pm is %s' % elgamalA.decrypt(Pc))

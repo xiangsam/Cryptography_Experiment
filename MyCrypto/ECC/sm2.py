@@ -53,9 +53,6 @@ class SM2:
     def decrypt(self, C):
         byteC1, C = C[:2*self.byteLen + 1],C[2*self.byteLen + 1:]
         byteC3, byteC2 = C[:256//8], C[256//8:]
-        print(byteC1)
-        print(byteC2)
-        print(byteC3)
         C1 = self.G.bytestrToPoint(byteC1)
         p2 = self.dk * C1
         x2 = p2.x.value.to_bytes(self.byteLen, 'big')
@@ -116,6 +113,6 @@ if __name__ == '__main__':
     print('publik key x:' , hex(sm2.pubK.x.value))
     print('public key y:' ,hex(sm2.pubK.y.value))
     M = 'encryption standard'
-    print(M.encode('utf-8'))
+    print('message is:',M)
     ans = sm2.encrypt(M)
-    print(sm2.decrypt(ans))
+    print('decrypt message is:',sm2.decrypt(ans))
